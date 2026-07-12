@@ -104,13 +104,14 @@ export async function contarRevisoes(uid, materia, assunto) {
 
 /* ---------- RESET DE QUESTÕES POR MATÉRIA ---------- */
 
-export async function resetarQuestoesFixacao(uid, materia) {
+export async function resetarQuestoes(uid, materia, questoesTipo) {
+  // questoesTipo: "fixacao" | "simulado"
   const ref = collection(db, "sessoes");
   const q = query(
     ref,
     where("uid", "==", uid),
     where("materia", "==", materia),
-    where("questoesTipo", "==", "fixacao")
+    where("questoesTipo", "==", questoesTipo)
   );
   const snap = await getDocs(q);
   // Apaga o campo de questões dos registros (mantém a sessão, some só a contagem)

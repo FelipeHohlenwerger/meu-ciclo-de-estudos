@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
-import { observarSessoes, resetarQuestoesFixacao } from "./dados";
+import { observarSessoes, resetarQuestoes } from "./dados";
 
 function inicioDaSemana() {
   const d = new Date();
@@ -35,11 +35,12 @@ export default function Estatisticas({ materias }) {
   }, [user]);
 
   async function handleReset(materia) {
+    const rotulo = abaQuestoes === "fixacao" ? "fixação" : "simulado";
     const ok = window.confirm(
-      `Resetar a contagem de fixação de "${materia}"? Isso apaga os registros de questões de fixação dessa matéria de vez.`
+      `Resetar a contagem de ${rotulo} de "${materia}"? Isso apaga os registros de questões de ${rotulo} dessa matéria de vez.`
     );
     if (!ok) return;
-    await resetarQuestoesFixacao(user.uid, materia);
+    await resetarQuestoes(user.uid, materia, abaQuestoes);
     // Não precisa recarregar manualmente: o listener em tempo real já vai
     // refletir a mudança assim que o Firestore confirmar a escrita.
   }
@@ -155,15 +156,13 @@ export default function Estatisticas({ materias }) {
                 <span className="q-name">{materia}</span>
                 <span className="q-numbers">{feitas} feitas</span>
                 <span className={`q-pct ${classe}`}>{pct}%</span>
-                {abaQuestoes === "fixacao" && (
-                  <button
-                    className="reset-btn"
-                    title={`Resetar contagem de ${materia}`}
-                    onClick={() => handleReset(materia)}
-                  >
-                    ↺
-                  </button>
-                )}
+                <button
+                  className="reset-btn"
+                  title={`Resetar contagem de ${materia}`}
+                  onClick={() => handleReset(materia)}
+                >
+                  ↺
+                </button>
               </div>
             );
           })}
@@ -171,7 +170,7 @@ export default function Estatisticas({ materias }) {
         <p className="footnote" style={{ padding: "0 22px" }}>
           {abaQuestoes === "fixacao"
             ? "Toque em ↺ para resetar a contagem de fixação de uma matéria — apaga os registros dela de vez."
-            : "% de acerto acumulado em simulados desde o início dos estudos."}
+            : "Toque em ↺ para resetar a contagem de simulados de uma matéria — apaga os registros dela de vez."}
         </p>
 
         <div className="section-label" style={{ margin: "22px 22px 8px" }}>simulados</div>
